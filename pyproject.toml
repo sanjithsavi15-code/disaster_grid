@@ -1,0 +1,14 @@
+[project]
+name = "disaster_grid"
+version = "0.1.0"
+dependencies = [
+    "openenv-core",
+    "fastapi",
+    "uvicorn",
+    "pydantic",
+    "rich",
+]
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
