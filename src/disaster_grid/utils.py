@@ -18,7 +18,7 @@ Controls
 | d     | MOVE_E     | Move agent one column right             |
 | a     | MOVE_W     | Move agent one column left              |
 | r     | REPAIR     | Repair current sector (+25 health, -15) |
-| c     | RECHARGE   | Recharge energy (+20, only at sector 0) |
+| c     | RECHARGE   | Recharge energy (+20, only at sector 12) |
 | q     | WAIT       | Skip turn (-1 energy)                   |
 | x     | Quit       | End the session immediately             |
 +-------+------------+-----------------------------------------+
@@ -108,7 +108,7 @@ def render_grid(env: CityGrid) -> str:
             idx = row * 5 + col
             if env.agent_pos == idx:
                 emoji = _EMOJI_AGENT
-            elif idx == 0:
+            elif idx == 12:
                 emoji = _EMOJI_BASE
             elif env.grid_health[idx] < _CRITICAL_THRESHOLD:
                 emoji = _EMOJI_FIRE
@@ -174,7 +174,7 @@ def _render_controls() -> str:
         _header("— CONTROLS —"),
         "  [W] Move North    [S] Move South",
         "  [A] Move West     [D] Move East",
-        "  [R] Repair        [C] Recharge (sector 0 only)",
+        "  [R] Repair        [C] Recharge (sector 12 only)",
         "  [Q] Wait          [X] Quit",
         _SEPARATOR_THIN,
     ]
@@ -300,7 +300,7 @@ def play_manual(seed: int | None = None) -> None:
     print()
     print("  Legend:")
     print(f"    [{_EMOJI_AGENT}] Agent position")
-    print(f"    [{_EMOJI_BASE}] Base / Recharge station (sector 0)")
+    print(f"    [{_EMOJI_BASE}] Base / Recharge station (sector 12)")
     print(f"    [{_EMOJI_FIRE}] Critical sector (health < 30)")
     print(f"    [{_EMOJI_HEALTHY}] Healthy sector (health ≥ 30)")
     print()

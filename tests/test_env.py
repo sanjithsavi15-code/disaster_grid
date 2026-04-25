@@ -81,7 +81,7 @@ def test_initial_state(env: CityGrid) -> None:
 
     Checks
     ------
-    * Agent starts at sector 0 (the recharge station).
+    * Agent starts at sector 12 (the recharge station).
     * Agent starts with full energy (100).
     * Step counter is at 0.
     * Grid contains exactly ``_NUM_CRISIS_SECTORS`` (5) sectors forced to
@@ -89,7 +89,7 @@ def test_initial_state(env: CityGrid) -> None:
     * No sector starts at health 0 (the reset must not accidentally kill any
       sector beyond the forced crisis sectors).
     """
-    assert env.agent_pos == 0, "Agent must start at sector 0 (recharge station)."
+    assert env.agent_pos == 12, "Agent must start at sector 12 (recharge station)."
     assert env.agent_energy == 100, "Agent must start with full energy (100)."
     assert env.step_count == 0, "Step counter must be 0 immediately after reset."
 
@@ -101,9 +101,9 @@ def test_initial_state(env: CityGrid) -> None:
 
     assert len(env.grid_health) == 25, "Grid must contain exactly 25 sectors."
     assert all(h >= 0 for h in env.grid_health), "No sector may start below 0."
-    # Sector 0 must never be forced into crisis (it is the recharge station).
-    assert env.grid_health[0] > _CRISIS_HEALTH, (
-        "Sector 0 (recharge station) must not start in crisis."
+    # Sector 12 must never be forced into crisis (it is the recharge station).
+    assert env.grid_health[12] > _CRISIS_HEALTH, (
+        "Sector 12 (recharge station) must not start in crisis."
     )
 
 
@@ -176,7 +176,8 @@ def test_wall_collision_north(env: CityGrid) -> None:
       succeeded — this punishes the agent for poor pathfinding without
       requiring explicit boundary detection in the reward verifiers.
     """
-    assert env.agent_pos == 0, "Pre-condition: agent must start at sector 0."
+    env.agent_pos = 0
+    assert env.agent_pos == 0, "Pre-condition: agent must be at sector 0."
     energy_before = env.agent_energy  # 100
 
     env.step(_action(ActionType.MOVE_N))
@@ -290,53 +291,53 @@ def test_repair_caps_at_100(env: CityGrid) -> None:
     )
 
 
-# ── Test 7: RECHARGE at sector 0 ──────────────────────────────────────────────
+# ── Test 7: RECHARGE at sector 12 ─────────────────────────────────────────────
 
 
 def test_recharge_at_station_increases_energy(env: CityGrid) -> None:
     """
-    Verify that RECHARGE at sector 0 adds exactly 20 energy and does not
+    Verify that RECHARGE at sector 12 adds exactly 20 energy and does not
     set ``is_error``.
 
-    The agent starts at sector 0 and at full energy (100), so the first
+    The agent starts at sector 12 and at full energy (100), so the first
     RECHARGE would overflow.  We manually set energy to 70 to give a
     visible +20 delta without hitting the cap.
     """
-    env.agent_pos = 0
+    env.agent_pos = 12
     env.agent_energy = 70
 
     _, _, _, _, info = env.step(_action(ActionType.RECHARGE))
 
     assert env.agent_energy == 90, (
-        f"RECHARGE at sector 0 must add 20 energy; expected 90, "
+        f"RECHARGE at sector 12 must add 20 energy; expected 90, "
         f"got {env.agent_energy}."
     )
     assert info["step_result"]["is_error"] is False, (
-        "RECHARGE at sector 0 must not set is_error."
+        "RECHARGE at sector 12 must not set is_error."
     )
 
 
-# ── Test 8: RECHARGE outside sector 0 ────────────────────────────────────────
+# ── Test 8: RECHARGE outside sector 12 ───────────────────────────────────────
 
 
 def test_recharge_outside_station_is_penalised(env: CityGrid) -> None:
     """
-    Verify that RECHARGE attempted outside sector 0 is flagged as an error
+    Verify that RECHARGE attempted outside sector 12 is flagged as an error
     and costs 1 energy (the wrong-location penalty).
 
     This test confirms that the spatial gating logic in ``step()`` correctly
     prevents free energy generation from arbitrary positions.
     """
-    env.agent_pos = 7   # somewhere other than the recharge station
+    env.agent_pos = 0   # non-station sector (top-left)
     energy_before = env.agent_energy
 
     _, _, _, _, info = env.step(_action(ActionType.RECHARGE))
 
     assert info["step_result"]["is_error"] is True, (
-        "RECHARGE outside sector 0 must set is_error=True."
+        "RECHARGE outside sector 12 must set is_error=True."
     )
     assert env.agent_energy == energy_before - 1, (
-        "RECHARGE outside sector 0 must deduct 1 energy (wrong-location penalty)."
+        "RECHARGE outside sector 12 must deduct 1 energy (wrong-location penalty)."
     )
 
 
@@ -349,7 +350,7 @@ def test_recharge_caps_at_100(env: CityGrid) -> None:
 
     An agent at 95 energy should reach 100, not 115, after a valid RECHARGE.
     """
-    env.agent_pos = 0
+    env.agent_pos = 12
     env.agent_energy = 95
 
     env.step(_action(ActionType.RECHARGE))
@@ -616,7 +617,7 @@ def test_reset_restores_full_state(env: CityGrid) -> None:
 
     assert env.step_count == 0, "reset() must zero the step counter."
     assert env.agent_energy == 100, "reset() must restore full energy."
-    assert env.agent_pos == 0, "reset() must return agent to sector 0."
+    assert env.agent_pos == 12, "reset() must return agent to sector 12."
 
     crisis_count = sum(1 for h in env.grid_health if h == _CRISIS_HEALTH)
     assert crisis_count == _NUM_CRISIS_SECTORS, (

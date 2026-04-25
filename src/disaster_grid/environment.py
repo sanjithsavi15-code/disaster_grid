@@ -48,8 +48,9 @@ _NUM_SECTORS: int = _GRID_SIZE ** 2   # 25 total sectors
 _MOVE_COST: int = 2                    # energy deducted per move attempt (wall or not)
 _REPAIR_COST: int = 15                 # energy deducted per REPAIR
 _REPAIR_GAIN: int = 25                 # health added to current sector per REPAIR
-_RECHARGE_GAIN: int = 20              # energy added per valid RECHARGE (at sector 0)
-_RECHARGE_WRONG_COST: int = 1         # energy penalty for RECHARGE outside sector 0
+_RECHARGE_STATION: int = 12           # center sector where RECHARGE is valid
+_RECHARGE_GAIN: int = 20              # energy added per valid RECHARGE (at sector 12)
+_RECHARGE_WRONG_COST: int = 1         # energy penalty for RECHARGE outside sector 12
 _WAIT_COST: int = 1                    # energy deducted per WAIT
 
 # ── Entropy constants ─────────────────────────────────────────────────────────
@@ -81,7 +82,7 @@ class CityGrid(openenv.AutoEnv):
         (0,3) (1,3) (2,3) (3,3) (4,3)   →  indices 15–19
         (0,4) (1,4) (2,4) (3,4) (4,4)   →  indices 20–24
 
-    Sector 0 is the top-left corner and serves as the only recharge station.
+    Sector 12 is the center cell and serves as the only recharge station.
 
     Episode dynamics
     ----------------
@@ -282,7 +283,7 @@ class CityGrid(openenv.AutoEnv):
         -------
         observation : dict
             ``GridObservation.model_dump()`` representing the initial world
-            state.  The agent starts at sector 0 with full energy and faces
+            state.  The agent starts at sector 12 with full energy and faces
             at least five critical sectors.
         info : dict
             Empty dict.  Provided for API compatibility with OpenEnv / Gym.
@@ -293,7 +294,7 @@ class CityGrid(openenv.AutoEnv):
         # ── Reset counters ─────────────────────────────────────────────────
         self.step_count = 0
         self.agent_energy = 100
-        self.agent_pos = 0
+        self.agent_pos = _RECHARGE_STATION
 
         # ── Randomise grid health ──────────────────────────────────────────
         self.grid_health = [
@@ -301,10 +302,11 @@ class CityGrid(openenv.AutoEnv):
             for _ in range(_NUM_SECTORS)
         ]
 
-        # ── Force five crisis sectors, excluding sector 0 so the recharge
+        # ── Force five crisis sectors, excluding sector 12 so the recharge
         #    station always starts accessible and reachable ─────────────────
         crisis_candidates: list[int] = random.sample(
-            range(1, _NUM_SECTORS), _NUM_CRISIS_SECTORS
+            [idx for idx in range(_NUM_SECTORS) if idx != _RECHARGE_STATION],
+            _NUM_CRISIS_SECTORS,
         )
         for idx in crisis_candidates:
             self.grid_health[idx] = _CRISIS_HEALTH
@@ -370,7 +372,7 @@ class CityGrid(openenv.AutoEnv):
         applied.  This punishes the agent for poor pathing without requiring
         boundary-check logic inside the reward verifiers.
 
-        **RECHARGE outside sector 0** – deducts ``_RECHARGE_WRONG_COST`` (1)
+        **RECHARGE outside sector 12** – deducts ``_RECHARGE_WRONG_COST`` (1)
         energy and sets ``is_error=True``.  The deliberately small penalty
         keeps the training signal proportional; a large penalty would dominate
         the R2 efficiency term and cause the agent to avoid RECHARGE entirely.
@@ -435,7 +437,7 @@ class CityGrid(openenv.AutoEnv):
                 )
 
             elif action_type is ActionType.RECHARGE:
-                if self.agent_pos == 0:
+                if self.agent_pos == _RECHARGE_STATION:
                     self.agent_energy = min(100, self.agent_energy + _RECHARGE_GAIN)
                 else:
                     self.agent_energy = max(
@@ -444,7 +446,7 @@ class CityGrid(openenv.AutoEnv):
                     is_error = True
                     error_message = (
                         f"RECHARGE attempted at sector {self.agent_pos} "
-                        f"(valid only at sector 0). "
+                        f"(valid only at sector 12). "
                         f"Penalty: -{_RECHARGE_WRONG_COST} energy."
                     )
 

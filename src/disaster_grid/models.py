@@ -62,7 +62,7 @@ class ActionType(str, Enum):
     RECHARGE
         Replenish the agent's energy reserve.
         Energy gain: +20 (capped at 100).
-        **Only valid at sector index 0** (the recharge station at top-left).
+        **Only valid at sector index 12** (the recharge station at the center).
         Attempting RECHARGE elsewhere is treated as a no-op with an error flag.
     WAIT
         The agent stays in place and takes no action.
@@ -90,7 +90,7 @@ class SectorState(BaseModel):
     The state of a single cell in the 5 × 5 city grid.
 
     The grid uses row-major indexing: sector ``index = row * 5 + col``.
-    Sector 0  is the top-left corner (the recharge station).
+    Sector 0  is the top-left corner.
     Sector 24 is the bottom-right corner.
 
     ``SectorState`` objects are held in ``environment.py``'s internal grid
@@ -362,7 +362,7 @@ class StepResult(BaseModel):
     is_error : bool
         ``True`` when the action could not be executed for any reason:
         invalid JSON, invalid ``ActionType``, illegal move (e.g. MOVE_N from
-        row 0), or RECHARGE attempted outside sector 0.  An error step is a
+        row 0), or RECHARGE attempted outside sector 12.  An error step is a
         no-op for the environment but still incurs entropy.
     error_message : str
         Human-readable description of the error.  Empty string when

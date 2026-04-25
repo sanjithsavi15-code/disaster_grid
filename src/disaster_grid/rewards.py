@@ -154,7 +154,7 @@ def get_efficiency_reward(step_result: StepResult) -> float:
     ----------
     ``energy_spent <= 0`` occurs on three legitimate step types:
 
-    1. **RECHARGE at sector 0** – energy increased; ``energy_after >
+    1. **RECHARGE at sector 12** – energy increased; ``energy_after >
        energy_before``.  No efficiency score is appropriate because the agent
        gained a resource rather than spending one.
     2. **Parse error** – no energy was deducted; the step was a no-op.
