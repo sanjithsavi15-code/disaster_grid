@@ -6,4 +6,5 @@ Requires-Dist: fastapi
 Requires-Dist: uvicorn
 Requires-Dist: pydantic
 Requires-Dist: rich
-Requires-Dist: pytest
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"

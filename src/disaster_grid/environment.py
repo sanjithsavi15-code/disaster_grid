@@ -5,7 +5,7 @@ Core OpenEnv environment for the disaster_grid hackathon project.
 
 Architecture overview
 ---------------------
-``CityGrid`` inherits from ``openenv.Environment`` and implements the standard
+``CityGrid`` inherits from ``openenv.AutoEnv`` and implements the standard
 ``reset`` / ``step`` interface.  It owns the full physics simulation:
 
 * **Grid state** – 25 sector health values mutated by entropy and REPAIR.
@@ -69,7 +69,7 @@ _NUM_CRISIS_SECTORS: int = 5          # sectors forced into crisis at reset
 _MAX_STEPS: int = 50
 
 
-class CityGrid:
+class CityGrid(openenv.AutoEnv):
     """
     A 5 × 5 disaster-recovery grid environment compliant with the OpenEnv API.
 
@@ -383,9 +383,13 @@ class CityGrid:
         parsed_action: AgentAction | None = None
         is_error: bool = False
         error_message: str = ""
-        action_attempted: str = (
-            action if isinstance(action, str) else json.dumps(action)
-        )
+        if isinstance(action, str):
+            action_attempted = action
+        else:
+            try:
+                action_attempted = json.dumps(action)
+            except (TypeError, ValueError):
+                action_attempted = repr(action)
 
         try:
             raw: dict = json.loads(action) if isinstance(action, str) else action

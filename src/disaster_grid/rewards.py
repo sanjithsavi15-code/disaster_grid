@@ -196,8 +196,12 @@ def get_efficiency_reward(step_result: StepResult) -> float:
     if energy_spent <= 0:
         return 0.0
 
-    return health_gained / energy_spent
+    # Prevent the agent from getting a massive score multiplier by repairing
+    # with less than 15 energy remaining right before the episode terminates.
+    if health_gained > 0 and energy_spent < 15:
+        energy_spent = 15
 
+    return health_gained / energy_spent
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Verifier 3 — Guardrail (Format & Syntax)
@@ -252,7 +256,10 @@ def get_format_reward(step_result: StepResult) -> float:
     float
         ``+1.0`` for schema-compliant steps, ``-2.0`` for any violation.
     """
-    if step_result.is_error or step_result.action_parsed is None:
+    # Use local bindings so static analyzers always see a concrete symbol flow.
+    is_error = step_result.is_error
+    parsed_action = step_result.action_parsed
+    if is_error or parsed_action is None:
         return -2.0
     return 1.0
 
@@ -326,8 +333,7 @@ def compute_reward(info: dict[str, Any]) -> float:
     if "step_result" not in info:
         return 0.0
 
-    step_result: StepResult = StepResult(**info["step_result"])
-
+    step_result = StepResult(**info["step_result"])
     r1: float = get_health_reward(step_result)
     r2: float = get_efficiency_reward(step_result)
     r3: float = get_format_reward(step_result)
