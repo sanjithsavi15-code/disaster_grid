@@ -29,7 +29,7 @@ from __future__ import annotations
 import json
 from unittest.mock import patch
 
-import pytest
+import pytest  # pyright: ignore[reportMissingImports]
 
 from src.disaster_grid.environment import CityGrid
 from src.disaster_grid.models import ActionType

@@ -1,3 +1,9 @@
 Metadata-Version: 2.4
 Name: disaster_grid
-Version: 0.0.0
+Version: 0.1.0
+Requires-Dist: openenv-core
+Requires-Dist: fastapi
+Requires-Dist: uvicorn
+Requires-Dist: pydantic
+Requires-Dist: rich
+Requires-Dist: pytest
