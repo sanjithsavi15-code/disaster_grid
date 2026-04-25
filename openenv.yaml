@@ -9,6 +9,7 @@ description: >
   A 5x5 fully-observable grid simulation where an RL agent (Llama-3 trained via GRPO) 
   acts as an Autonomous Emergency Manager. The agent must manage its energy 
   to navigate and repair decaying city sectors before critical failure.
+
 author: "Sanjith & Varsha"
 license: MIT
 
