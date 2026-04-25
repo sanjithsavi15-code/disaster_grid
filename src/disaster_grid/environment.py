@@ -33,7 +33,6 @@ import json
 import random
 from typing import Any
 
-from openenv import Environment
 from pydantic import ValidationError
 
 from .models import ActionType, AgentAction, GridObservation, SectorState, StepResult
@@ -69,7 +68,7 @@ _NUM_CRISIS_SECTORS: int = 5          # sectors forced into crisis at reset
 _MAX_STEPS: int = 50
 
 
-class CityGrid(Environment):
+class CityGrid:
     """
     A 5 × 5 disaster-recovery grid environment compliant with the OpenEnv API.
 
@@ -126,7 +125,7 @@ class CityGrid(Environment):
         by Gymnasium and OpenEnv so the environment can be constructed cheaply
         inside a trainer worker without triggering random-number generation.
         """
-        super().__init__()
+      
         self.grid_health: list[int] = [0] * _NUM_SECTORS
         self.agent_pos: int = 0
         self.agent_energy: int = 0
