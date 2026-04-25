@@ -32,6 +32,7 @@ from __future__ import annotations
 import json
 import random
 from typing import Any
+import openenv
 
 from pydantic import ValidationError
 
@@ -68,7 +69,7 @@ _NUM_CRISIS_SECTORS: int = 5          # sectors forced into crisis at reset
 _MAX_STEPS: int = 50
 
 
-class CityGrid:
+class CityGrid(openenv.Environment):
     """
     A 5 × 5 disaster-recovery grid environment compliant with the OpenEnv API.
 
