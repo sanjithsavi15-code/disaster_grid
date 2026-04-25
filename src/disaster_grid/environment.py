@@ -69,7 +69,7 @@ _NUM_CRISIS_SECTORS: int = 5          # sectors forced into crisis at reset
 _MAX_STEPS: int = 50
 
 
-class CityGrid(openenv.Environment):
+class CityGrid:
     """
     A 5 × 5 disaster-recovery grid environment compliant with the OpenEnv API.
 
