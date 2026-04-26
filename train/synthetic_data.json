@@ -1,22 +1,18 @@
 [
   {
-    "prompt": "Grid Size: 3x3. Start: (0,0). Target: (2,2). Safe zones: (0,1), (1,1), (1,2). Generate the optimal rescue path.",
-    "completion": "Analyzing optimal route to avoid hazards. Starting at (0,0). Moving to safe zone (0,1). Moving to safe zone (1,1). Moving to safe zone (1,2). Approaching the target coordinates. Final Move: (2,2)"
+    "prompt": "Current State: {\"agent_position\": 0, \"agent_energy\": 100, \"critical_sectors\": [12, 18], \"grid_health\": [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 20, 100, 100, 100, 100, 100, 15, 100, 100, 100, 100, 100, 100]}",
+    "completion": "{\"action\": \"MOVE_E\", \"reasoning\": \"I am at the base with full energy. Sector 12 and 18 are critical. I will begin moving East toward the center of the grid to reach sector 12.\"}"
   },
   {
-    "prompt": "Grid Size: 4x4. Start: (0,0). Target: (3,3). Obstacles: (1,1), (2,2). Route around obstacles to reach the target.",
-    "completion": "Calculating path to bypass blockages at (1,1) and (2,2). Starting at (0,0). Moving down to (0,1). Moving down to (0,2). Moving down to (0,3). Moving right to (1,3). Moving right to (2,3). Clear path ahead. Final Move: (3,3)"
+    "prompt": "Current State: {\"agent_position\": 12, \"agent_energy\": 70, \"critical_sectors\": [12], \"grid_health\": [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 25, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100]}",
+    "completion": "{\"action\": \"REPAIR\", \"reasoning\": \"I have reached sector 12, which has a health of 25. I will perform a repair action to restore this sector and prevent city collapse.\"}"
   },
   {
-    "prompt": "Emergency evacuation. Start: A1. Target: D4. Blocked paths: B2, C3. Provide the sequence of safe moves.",
-    "completion": "Initiating evacuation protocol from A1. Moving to A2 to avoid B2. Moving to A3. Moving to A4. Moving to B4 to avoid C3. Moving to C4. Approaching destination. Final Move: D4"
+    "prompt": "Current State: {\"agent_position\": 7, \"agent_energy\": 12, \"critical_sectors\": [], \"grid_health\": [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100]}",
+    "completion": "{\"action\": \"MOVE_N\", \"reasoning\": \"My energy is critically low (12%). There are no active fires, so I must prioritize returning to the base at index 0 to recharge immediately.\"}"
   },
   {
-    "prompt": "Disaster zone logistics. Medical supply drop at (1,1). Target hospital at (3,4). Start at (0,0). Find the most efficient path.",
-    "completion": "Deploying from (0,0). Navigating to collect medical supplies at (1,1). Navigating to (2,1). Navigating to (3,1). Navigating north to (3,2). Navigating to (3,3). Reaching hospital location. Final Move: (3,4)"
-  },
-  {
-    "prompt": "Grid Size: 5x5. Start: (4,0). Target: (0,4). High-risk flood zone in row 2. Find a route staying above row 2.",
-    "completion": "Plotting high-elevation route from (4,0). Moving to (3,0). Moving to (3,1). Moving to (3,2). Moving to (3,3). Moving to (3,4). Moving down to (2,4) - wait, correcting path to avoid flood. Staying on row 3 until safe. Final Move: (0,4)"
+    "prompt": "Current State: {\"agent_position\": 0, \"agent_energy\": 30, \"critical_sectors\": [5], \"grid_health\": [100, 100, 100, 100, 100, 10, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100]}",
+    "completion": "{\"action\": \"RECHARGE\", \"reasoning\": \"I am at the base (index 0) and my energy is low. I will recharge now to ensure I have enough power to reach and repair sector 5.\"}"
   }
 ]
