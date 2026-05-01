@@ -7,11 +7,7 @@ dependencies = [
     "uvicorn",
     "pydantic",
     "rich",
-]
-
-[project.optional-dependencies]
-dev = [
-    "pytest",
+    "streamlit",  # Added: Required for the dashboard
 ]
 
 [build-system]

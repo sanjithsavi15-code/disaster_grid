@@ -1,56 +1,13 @@
-# ─────────────────────────────────────────────────────────────────────────────
-# openenv.yaml — Disaster Grid Environment Metadata
-# Conforms to the OpenEnv 1.0 specification
-# ─────────────────────────────────────────────────────────────────────────────
-
 name: disaster-grid-env
 version: "1.0.0"
 description: >
   A 5x5 fully-observable grid simulation where an RL agent (Llama-3 trained via GRPO) 
-  acts as an Autonomous Emergency Manager. The agent must manage its energy 
-  to navigate and repair decaying city sectors before critical failure.
-
+  acts as an Autonomous Emergency Manager.
 author: "Sanjith & Varsha"
 license: MIT
 
-# ── interface ─────────────────────────────────────────────────────────────────
-interface:
-  # This tells the framework exactly where our Python class lives!
-  step:   "src.disaster_grid.environment.CityGrid.step"
-  reset:  "src.disaster_grid.environment.CityGrid.reset"
-
-# ── observation space (From our models.py) ────────────────────────────────────
-observation_space:
-  type: object
-  fields:
-    step_number:           {type: integer}
-    agent_position:        {type: integer, description: "Index 0-24"}
-    agent_energy:          {type: integer, description: "Scale 0-100"}
-    current_sector_health: {type: integer}
-    critical_sectors:      
-      type: array
-      items: {type: integer}
-    average_city_health:   {type: number, format: float}
-
-# ── action space (From our models.py) ─────────────────────────────────────────
-action_space:
-  type: object
-  fields:
-    action:    {type: string, enum: [MOVE_N, MOVE_S, MOVE_E, MOVE_W, REPAIR, RECHARGE, WAIT]}
-    reasoning: {type: string, description: "Chain of thought explanation"}
-
-# ── runtime ───────────────────────────────────────────────────────────────────
 runtime:
   python: "3.10"
   entrypoint: "app.py"
   port: 7860
-  framework: fastapi
-
-# ── tags ──────────────────────────────────────────────────────────────────────
-tags:
-  - disaster-management
-  - grid-world
-  - reinforcement-learning
-  - grpo
-  - llama-3
-  - huggingface-spaces
+  framework: streamlit  # Fixed: Changed from fastapi to streamlit

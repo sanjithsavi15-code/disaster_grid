@@ -106,4 +106,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
 # --workers 1     : single worker is safer for stateful RL environments;
 #                   increase to 2+ only after verifying episode state is not
 #                   shared across worker processes.
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "7860", "--workers", "1"]
+CMD ["streamlit", "run", "app.py", "--server.port=7860", "--server.address=0.0.0.0"]
