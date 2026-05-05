@@ -85,22 +85,12 @@ Throughout the hackathon, we iterated from manual logic validation to full auton
 ### Phase 1: Engine Validation (Manual CLI)
 Before training the LLM, we built a terminal-based CLI to manually playtest the `CityGrid` physics. This ensured movement costs, boundary collisions, repair mechanics, and the three-part reward system functioned perfectly.
 
-*(Insert your first video showing the manual terminal gameplay here)*
-> **Instructions to add video:**
-> Replace the placeholder below with your video link or file path. If uploading directly to GitHub/Hugging Face, use relative paths.
-> ```html
-> <video controls src="./Vrxpe4DR6s.mp4" width="100%"></video>
-> ```
+videos1.mp4
 
 ### Phase 2: Autonomous Agent Integration (UI Dashboard)
 We then connected our GRPO-trained Llama-3 agent to the Streamlit UI. While the agent successfully parses the environment and issues valid JSON commands (satisfying the R3 verifier), we are currently tuning the R1/R2 reward weights. As seen in the demo, the agent sometimes exhibits suboptimal routing or gets trapped in energy-depletion loops, highlighting the challenge of balancing long-horizon planning with immediate crisis response.
 
-*(Insert your second video showing the Streamlit UI gameplay here)*
-> **Instructions to add video:**
-> Replace the placeholder below with your video link or file path.
-> ```html
-> <video controls src="./opera_Z2g5nn07sJ.mp4" width="100%"></video>
-> ```
+video2.mp4
 
 ---
 *Developed by Sanjith P & Varsha D for the Meta PyTorch OpenEnv Hackathon.*
