@@ -90,7 +90,7 @@ Before training the LLM, we built a terminal-based CLI to manually playtest the 
 ### Phase 2: Autonomous Agent Integration (UI Dashboard)
 We then connected our GRPO-trained Llama-3 agent to the Streamlit UI. While the agent successfully parses the environment and issues valid JSON commands (satisfying the R3 verifier), we are currently tuning the R1/R2 reward weights. As seen in the demo, the agent sometimes exhibits suboptimal routing or gets trapped in energy-depletion loops, highlighting the challenge of balancing long-horizon planning with immediate crisis response.
 
-video2.mp4
+<video controls src="./video2.mp4" width="100%"></video>
 
 ---
 *Developed by Sanjith P & Varsha D for the Meta PyTorch OpenEnv Hackathon.*
