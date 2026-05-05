@@ -1,5 +1,6 @@
 ---
 title: AI-Kinetic Disaster Recovery Grid
+link: https://huggingface.co/spaces/disaster-grid/disaster_grid
 emoji: 🏙️
 colorFrom: red
 colorTo: yellow
