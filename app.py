@@ -702,16 +702,23 @@ with left_col:
     st.markdown('<div class="btn-danger">', unsafe_allow_html=True)
     if st.button("🌋  Inject Random Disaster", key="btn_dis"):
         crises = random.sample(range(1, 25), 4)
-        st.session_state.env.reset({"target_crises": crises})
-        _sync_from_env()
-        _add_log(f"DISASTER INJECTED: Sectors {crises} set to critical!", "crit")
-        st.rerun()
+        st.session_state.env.reset(options={"target_crises": crises})
+        
+        # FIX: Tell Streamlit to sync with the newly updated physics engine!
+        _sync_from_env() 
+        _add_log(f"RANDOM DISASTER: Sectors {crises} have caught fire!", "crit")
+        
+        if hasattr(st, "rerun"):
+            st.rerun()
+        else:
+            st.experimental_rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown('<div class="btn-danger">', unsafe_allow_html=True)
     if st.button("🎯  Targeted Attack (Corners)", key="btn_corners"):
         corners = [4, 20, 24, 14]
-        st.session_state.env.reset({"target_crises": corners})
+        # FIX 2: Added 'options=' here so this button doesn't crash either!
+        st.session_state.env.reset(options={"target_crises": corners})
         _sync_from_env()
         _add_log("TARGETED STRIKE: Corners [4, 14, 20, 24] hit!", "crit")
         st.rerun()
@@ -724,7 +731,6 @@ with left_col:
         _full_reset()
         st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
-
     st.markdown("<hr/>", unsafe_allow_html=True)
 
     # ── Legend ──
