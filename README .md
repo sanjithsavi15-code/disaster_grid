@@ -41,125 +41,66 @@ Traditional centralized AI models assume perfect information and unlimited bandw
 
 We built the **AI-Kinetic Disaster Recovery Grid** — a Multi-Agent Reinforcement Learning (MARL) environment. Instead of a single "Omni-Agent," we deployed a distributed team of specialized agents acting on a dynamic 5×5 city grid.
 
-### Agent Roles
+### 🤖 The Agent (Autonomous Emergency Manager)
 
-| Agent | Role |
-|---|---|
-| 🛠️ **Scavenger** | Navigates the grid to collect scarce battery packs and repair parts. |
-| ⚙️ **Engineer** | Executes complex, multi-step repair sequences. |
-| 📡 **Dispatcher** | Holds the global map and intelligently guides the field agents. |
+The agent operates on a 5x5 grid (25 sectors) and must balance two critical metrics:
+1. **City Health:** Sectors degrade over time due to simulated entropy. The agent must navigate to critical sectors (health < 30) and perform `REPAIR` actions.
+2. **Energy:** Every action costs energy (`MOVE` costs 2, `REPAIR` costs 15). If energy hits 0, the agent dies. The agent must periodically return to the Base (Sector 12) to `RECHARGE`.
+
+### 🧠 The Reward System (Orthogonal Verifiers)
+
+To prevent reward hacking, we use three independent verifiers during GRPO training:
+* **R1 (Health):** Did the average city health improve? (Objective)
+* **R2 (Efficiency):** Was the health gained worth the energy spent? (Strategy)
+* **R3 (Format):** Did the LLM output valid JSON matching the `AgentAction` schema? (Compliance)
 
 ---
 
-## ⚙️ Workflow
+## ⚙️ Workflow & Architecture
 
 ### 1. Environment Simulation (OpenEnv)
+The world is modeled using `openenv-core`. The `CityGrid` class manages the physics: grid state, agent position, energy deduction, and random entropy generation. It provides a clean `reset()` and `step()` interface.
 
-The world is modeled as a 5×5 matrix using `openenv-core`. Each sector tracks internal state: **Health**, **Power**, and **Risk**.
+### 2. Training (GRPO + Unsloth)
+We utilize **Group Relative Policy Optimization (GRPO)** via the `trl` library, accelerated with **Unsloth** for 4-bit quantization, allowing us to train Llama-3 models efficiently within constrained GPU memory.
 
-![OpenEnv Local Development Configuration](./Cursor_iz08V4mFrU.png)
-*VS Code showing `environment.py` defining the `CityGrid` class and episode dynamics.*
-
-### 2. Training Scripts (GRPO + Unsloth)
-
-We used **Group Relative Policy Optimization (GRPO)**, accelerated with **Unsloth** to manage memory constraints during training.
-
-```python
-from openenv import OpenEnvGrid
-from trl import GRPOTrainer
-
-env = OpenEnvGrid(size=5, agents=["scavenger", "engineer", "dispatcher"])
-
-trainer = GRPOTrainer(
-    model="meta-llama/Llama-3-8B",
-    args=config,
-    train_dataset=env.get_training_data(),
-)
-trainer.train()
-```
+### 3. Frontend Dashboard (Streamlit)
+A production-ready Streamlit interface acts as the "Operational Theatre." It visualizes the grid state, agent telemetry, and the agent's "brain log" (reasoning output) in real-time.
 
 ---
 
-## 🧪 Validation
+## 🌍 Real-World Scalability
 
-### Local Validation & Execution
-
-Before pushing to the Hugging Face Space, we validate agent logic and entropy sequences via a local CLI built on `openenv-core` for rapid debugging of the 5×5 grid state transitions.
-
-<video controls src="./Vrxpe4DR6s.mp4" width="100%"></video>
-
-▶ [Watch validation video](./Vrxpe4DR6s.mp4)
-
-![Local Terminal Simulation Output](./warp_D3ZKOqiyfq.png)
-*Local terminal simulator showing a completed 50-step sequence tracking City Health and Energy metrics.*
-
-### Live Agent Simulation (Operational Theatre)
-
-To visualize multi-agent orchestration, we built a web-based UI — the **Operational Theatre** — deployed on Hugging Face Spaces. It allows random anomaly injection while observing LLM-powered agents respond in real time.
-
-<video controls src="./opera_Z2g5nn07sJ.mp4" width="100%"></video>
-
-▶ [Watch operational theatre video](./opera_Z2g5nn07sJ.mp4)
-
-*HF Space UI showing the autonomous agent navigating the grid with the Agent Brain Log streaming reasoning.*
+While currently a 5x5 simulation, this architecture scales to real-world disaster management:
+* **Grid Expansion:** The mathematical model can map to larger geographic sectors using real GIS data.
+* **Multi-Agent Orchestration:** The framework supports introducing specialized agents (e.g., drones for scouting, heavy machinery for repair) coordinating via shared observations.
+* **Predictive Maintenance:** By training on historical degradation rates, the model shifts from reactive repair to proactive maintenance.
 
 ---
 
-## 🌍 Real-World Applications
+## 📈 Development Progress & Demos
 
-- **Autonomous Smart Grid Management** — Dynamically rerouting power around physical failures to prevent cascading blackouts.
-- **Search and Rescue Drone Swarms** — Coordinating ground and air drones in disaster zones with limited battery life.
-- **Self-Healing Server Networks** — Autonomously rerouting global traffic and deploying patches during cyber-attacks.
+Throughout the hackathon, we iterated from manual logic validation to full autonomous control. Below are recordings of our progress.
 
----
+### Phase 1: Engine Validation (Manual CLI)
+Before training the LLM, we built a terminal-based CLI to manually playtest the `CityGrid` physics. This ensured movement costs, boundary collisions, repair mechanics, and the three-part reward system functioned perfectly.
 
-## ⚖️ Advantages & Trade-offs
+*(Insert your first video showing the manual terminal gameplay here)*
+> **Instructions to add video:**
+> Replace the placeholder below with your video link or file path. If uploading directly to GitHub/Hugging Face, use relative paths.
+> ```html
+> <video controls src="./Vrxpe4DR6s.mp4" width="100%"></video>
+> ```
 
-### ✅ Advantages
+### Phase 2: Autonomous Agent Integration (UI Dashboard)
+We then connected our GRPO-trained Llama-3 agent to the Streamlit UI. While the agent successfully parses the environment and issues valid JSON commands (satisfying the R3 verifier), we are currently tuning the R1/R2 reward weights. As seen in the demo, the agent sometimes exhibits suboptimal routing or gets trapped in energy-depletion loops, highlighting the challenge of balancing long-horizon planning with immediate crisis response.
 
-- **Task Specialization** — Specialized roles converge faster than a single omni-agent.
-- **Fault Tolerance** — No single point of failure; the Dispatcher reroutes around incapacitated agents.
-- **Realistic Observability** — Native "fog of war," forcing agents to communicate to gain a global view.
-
-### ⚠️ Trade-offs
-
-- **Credit Assignment** — Hard to reward early strategic moves whose payoff arrives many steps later.
-- **Non-Stationarity** — Other agents act simultaneously, making convergence non-trivial.
-
----
-
-## 📈 Scalability
-
-The architecture scales via **Hierarchical Multi-Agent Systems (HMAS)**. In a city-wide deployment, this 5×5 grid represents a single *Neighborhood*. Each Neighborhood Dispatcher reports to a higher-level **Zone Commander**, allowing the system to manage thousands of nodes without overwhelming any individual agent's context window.
+*(Insert your second video showing the Streamlit UI gameplay here)*
+> **Instructions to add video:**
+> Replace the placeholder below with your video link or file path.
+> ```html
+> <video controls src="./opera_Z2g5nn07sJ.mp4" width="100%"></video>
+> ```
 
 ---
-
-## 🚀 Run It Locally
-
-```bash
-git clone https://huggingface.co/spaces/<your-username>/disaster-grid
-cd disaster-grid
-
-python -m venv .venv
-source .venv/bin/activate    # or .venv\Scripts\Activate.ps1 on Windows
-
-pip install -e .
-
-# Run the local CLI simulator
-python -m src.disaster_grid.utils
-
-# Or launch the operational theatre
-python app.py
-```
-
-**Controls in CLI mode:** `W/A/S/D` to move · `R` to repair · `C` to recharge · `Q` to wait · `EXIT` to terminate.
-
----
-
-## 🏁 Conclusion
-
-The **AI-Kinetic Disaster Recovery Grid** demonstrates that LLMs can transition from *strategic chatting* to **strategic action**. By implementing multi-agent coordination inside a decaying environment, we are engineering the autonomous emergency responders of the future.
-
----
-
-*Developed by **Sanjith P** and **Varsha D** for the Meta PyTorch × Scaler OpenEnv Hackathon.*
+*Developed by Sanjith P & Varsha D for the Meta PyTorch OpenEnv Hackathon.*
