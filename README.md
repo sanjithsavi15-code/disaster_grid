@@ -85,12 +85,16 @@ Throughout the hackathon, we iterated from manual logic validation to full auton
 ### Phase 1: Engine Validation (Manual CLI)
 Before training the LLM, we built a terminal-based CLI to manually playtest the `CityGrid` physics. This ensured movement costs, boundary collisions, repair mechanics, and the three-part reward system functioned perfectly.
 
-<video controls src="./video1.mp4" width="100%"></video>
+[[video1]](https://github.com/sanjithsavi15-code/disaster_grid/raw/main/video1.mp4)
+<video src="https://github.com/sanjithsavi15-code/disaster_grid/raw/main/video1.mp4" controls="controls" style="max-width: 100%;">
+</video>
 
 ### Phase 2: Autonomous Agent Integration (UI Dashboard)
 We then connected our GRPO-trained Llama-3 agent to the Streamlit UI. While the agent successfully parses the environment and issues valid JSON commands (satisfying the R3 verifier), we are currently tuning the R1/R2 reward weights. As seen in the demo, the agent sometimes exhibits suboptimal routing or gets trapped in energy-depletion loops, highlighting the challenge of balancing long-horizon planning with immediate crisis response.
 
-<video controls src="./video2.mp4" width="100%"></video>
+[[video2]](https://github.com/sanjithsavi15-code/disaster_grid/raw/main/video2.mp4)
+<video src="https://github.com/sanjithsavi15-code/disaster_grid/raw/main/video2.mp4" controls="controls" style="max-width: 100%;">
+</video>
 
 ---
 *Developed by Sanjith P & Varsha D for the Meta PyTorch OpenEnv Hackathon.*
